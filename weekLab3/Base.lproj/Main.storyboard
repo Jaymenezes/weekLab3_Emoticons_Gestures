@@ -14,28 +14,23 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFit" misplaced="YES" image="pig" id="6ar-bn-dt3">
+                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" alpha="0.0" contentMode="scaleAspectFit" misplaced="YES" image="pig" id="6ar-bn-dt3">
                                 <frame key="frameInset" minX="137" minY="262" width="100" height="100"/>
                                 <autoresizingMask key="autoresizingMask"/>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="5c0-hs-N8T">
-                                <frame key="frameInset" minX="26" minY="50" width="82" height="30"/>
+                                <frame key="frameInset" minX="52" minY="50" width="30" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Animate Pig"/>
                                 <connections>
                                     <action selector="didPressAnimatePig:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Pig-os-Krd"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="kcO-W4-u3l">
-                                <frame key="frameInset" minX="44" minY="107" width="46" height="30"/>
+                                <frame key="frameInset" minX="52" minY="107" width="30" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
-                                <connections>
-                                    <action selector="didTapMoveDown:" destination="BYZ-38-t0r" eventType="touchUpInside" id="OTi-ug-i6v"/>
-                                </connections>
                             </button>
                             <view contentMode="scaleToFill" misplaced="YES" id="8Mp-z9-HPN">
-                                <frame key="frameInset" minY="437" width="375" height="277"/>
+                                <frame key="frameInset" minY="617" width="375" height="277"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
                                     <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" misplaced="YES" image="excited" id="8YQ-i3-v7f">
@@ -95,6 +90,7 @@
                                 <gestureRecognizers/>
                                 <connections>
                                     <outletCollection property="gestureRecognizers" destination="9Zp-SG-pU5" appends="YES" id="K0o-Rl-F1r"/>
+                                    <outletCollection property="gestureRecognizers" destination="XJa-Tj-UPa" appends="YES" id="TqH-V3-nlq"/>
                                 </connections>
                             </view>
                         </subviews>
@@ -142,6 +138,11 @@
                         <action selector="panSmileyFaces:" destination="BYZ-38-t0r" id="rIH-BQ-CpJ"/>
                     </connections>
                 </panGestureRecognizer>
+                <tapGestureRecognizer numberOfTapsRequired="3" id="XJa-Tj-UPa">
+                    <connections>
+                        <action selector="didTapMoveDown:" destination="BYZ-38-t0r" id="sMG-0T-gnW"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="163.5" y="30.5"/>
         </scene>

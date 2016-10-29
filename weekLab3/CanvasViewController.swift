@@ -14,6 +14,8 @@ class CanvasViewController: UIViewController, UIGestureRecognizerDelegate {
     @IBOutlet weak var pigImage: UIImageView!
     var trayOriginalCenter: CGPoint!
     var trayDownOffset: CGFloat!
+    var trayUpOffset: CGFloat!
+
     var trayUp: CGPoint!
     var trayDown: CGPoint!
     var newlyCreatedFace: UIImageView!
@@ -29,13 +31,13 @@ class CanvasViewController: UIViewController, UIGestureRecognizerDelegate {
         super.viewDidLoad()
         
         
+        trayUpOffset = 190
+        trayDown = trayView.center
+        trayUp = CGPoint(x: trayView.center.x ,y: trayView.center.y - trayUpOffset)
         
-        
-        trayDownOffset = 190
-        trayUp = trayView.center
-        trayDown = CGPoint(x: trayView.center.x ,y: trayView.center.y + trayDownOffset)
-        
-        
+//        trayDownOffset = 190
+//        trayUp = trayView.center
+//        trayDown = CGPoint(x: trayView.center.x ,y: trayView.center.y + trayDownOffset)
         
         // Do any additional setup after loading the view.
     }
@@ -52,9 +54,23 @@ class CanvasViewController: UIViewController, UIGestureRecognizerDelegate {
     
     func didTaphNewlyCreatedFaces(sender: UITapGestureRecognizer) {
         
-        let doubleTap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: Selector(("handleDoubleTap")))
-        doubleTap.numberOfTapsRequired = 2
-        newlyCreatedFace.removeFromSuperview()
+       newlyCreatedFace = sender.view as! UIImageView
+        UIView.animate(withDuration: 0.4, delay: 0, usingSpringWithDamping: 0.3, initialSpringVelocity: 0.8, options: [], animations: {
+            
+            self.newlyCreatedFace.transform = self.newlyCreatedFace.transform.scaledBy(x: 1.5, y: 1.5)
+
+        }) { (Bool) in
+            UIView.animate(withDuration: 0.1, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 1, options: [], animations: {
+                
+                self.newlyCreatedFace.transform = self.newlyCreatedFace.transform.scaledBy(x: 0.1, y: 0.1)
+                
+            }) { (Bool) in
+                self.newlyCreatedFace.removeFromSuperview()
+
+            }
+        }
+        
+
     }
     
     
@@ -65,7 +81,9 @@ class CanvasViewController: UIViewController, UIGestureRecognizerDelegate {
         //        pinchGestureRecognizer.delegate = self
         
         let scale = sender.scale
-        newlyCreatedFace.transform = CGAffineTransform(scaleX: scale, y: scale)
+        newlyCreatedFace.transform = newlyCreatedFace.transform.scaledBy(x: scale, y: scale)
+        sender.scale = 1
+        
     }
     
     func didRotateNewlyFaces(sender: UIRotationGestureRecognizer) {
@@ -74,11 +92,9 @@ class CanvasViewController: UIViewController, UIGestureRecognizerDelegate {
         
         
         let rotation = sender.rotation
+        
         newlyCreatedFace.transform = newlyCreatedFace.transform.rotated(by: rotation)
         sender.rotation = 0
-        //        let rotation = sender.rotation
-        //        newlyCreatedFace.transform = newlyCreatedFace.transform.rotated(by: rotation)
-        
     }
     
     
@@ -131,23 +147,24 @@ class CanvasViewController: UIViewController, UIGestureRecognizerDelegate {
         let location = sender.location(in: view)
         
         let translation = sender.translation(in: view)
-        let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPanNewlyFaces(sender:)))
-        let pinchGestureRecognizer = UIPinchGestureRecognizer(target: self, action: #selector(didPinchNewlyCreatedFaces(sender:)))
-        let rotateGestureRecognizer = UIRotationGestureRecognizer(target: self, action: #selector(didRotateNewlyFaces(sender:)))
-        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTaphNewlyCreatedFaces(sender:)))
-        rotateGestureRecognizer.delegate = self
+
+
         
-        //        let doubleTap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: Selector(("handleDoubleTap")))
+  
         
         
         
         //
         
         if sender.state == .began {
+            let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPanNewlyFaces(sender:)))
             
-            
+            let pinchGestureRecognizer = UIPinchGestureRecognizer(target: self, action: #selector(didPinchNewlyCreatedFaces(sender:)))
+            let rotateGestureRecognizer = UIRotationGestureRecognizer(target: self, action: #selector(didRotateNewlyFaces(sender:)))
+            let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTaphNewlyCreatedFaces(sender:)))
             let imageView = sender.view as! UIImageView
-            //            originalFaceCenter = CGPoint(x: imageView.center.x ,y: imageView.center.y)
+            rotateGestureRecognizer.delegate = self
+
             
             
             
@@ -170,6 +187,8 @@ class CanvasViewController: UIViewController, UIGestureRecognizerDelegate {
             self.newlyCreatedFace.addGestureRecognizer(panGestureRecognizer)
             self.newlyCreatedFace.addGestureRecognizer(pinchGestureRecognizer)
             self.newlyCreatedFace.addGestureRecognizer(rotateGestureRecognizer)
+            self.newlyCreatedFace.addGestureRecognizer(tapGestureRecognizer)
+
             
             
             
@@ -209,26 +228,31 @@ class CanvasViewController: UIViewController, UIGestureRecognizerDelegate {
 
 
 
-
 @IBAction func panTray(_ sender: UIPanGestureRecognizer) {
-    
+    let location = sender.location(in: view)
+
     let translation = sender.translation(in: view)
-    
+
     if sender.state == .began {
         trayOriginalCenter = trayView.center
+       
         
-        print("Gesture began")
+        
     } else if sender.state == .changed {
+        print(location)
+        if location.y < 350 {
+                trayView.center = CGPoint(x: trayOriginalCenter.x, y: 667 + (translation.y / 10))
+        } else {
+            trayView.center = CGPoint(x: trayOriginalCenter.x, y: trayOriginalCenter.y + translation.y)
+        }
         
-        trayView.center = CGPoint(x: trayOriginalCenter.x, y: trayOriginalCenter.y + translation.y)
         
-        print("Gesture is changing")
     } else if sender.state == .ended {
         
         let velocity = sender.velocity(in: view)
         
-        if velocity.y > -50 {
-            UIView.animate(withDuration: 1, delay: 0.3, usingSpringWithDamping: 0.5, initialSpringVelocity: 1, options: [], animations: {
+        if velocity.y > -100 {
+            UIView.animate(withDuration: 0.7, delay: 0.3, usingSpringWithDamping: 0.5, initialSpringVelocity: 1, options: [], animations: {
                 
                 self.trayView.center = self.trayDown
                 self.arrowImage.transform = self.arrowImage.transform.rotated(by:CGFloat(-180 * M_PI / 180))
@@ -238,8 +262,8 @@ class CanvasViewController: UIViewController, UIGestureRecognizerDelegate {
             }
             
             
-        } else {
-            UIView.animate(withDuration: 1, delay: 0.3, usingSpringWithDamping: 0.5, initialSpringVelocity: 1, options: [], animations: {
+        } else if velocity.y < 100 {
+            UIView.animate(withDuration: 0.7, delay: 0.3, usingSpringWithDamping: 0.5, initialSpringVelocity: 1, options: [], animations: {
                 
                 self.trayView.center = self.trayUp
                 self.arrowImage.transform = self.arrowImage.transform.rotated(by:CGFloat(180 * M_PI / 180))
@@ -251,7 +275,6 @@ class CanvasViewController: UIViewController, UIGestureRecognizerDelegate {
             
         }
         
-        print("Gesture ended")
     }
     
 }
@@ -282,7 +305,16 @@ class CanvasViewController: UIViewController, UIGestureRecognizerDelegate {
 
 @IBAction func didTapMoveDown(_ sender: AnyObject) {
     
-    
+    UIView.animate(withDuration: 0.7, delay: 0.3, usingSpringWithDamping: 0.5, initialSpringVelocity: 1, options: [], animations: {
+        
+        
+        
+        self.trayView.transform = self.trayView.transform.translatedBy(x: 0, y: -180)
+        
+    }) { (Bool) in
+        
+    }
+
 }
 
 
